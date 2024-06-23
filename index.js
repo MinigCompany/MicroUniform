@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const CategoryRouter = require('./routes/CategoriesRoute')
 const UNDMRouter = require('./routes/UDMRoute')
 const uniformRouter = require('./routes/UniformsRoute')
+const RecordRoute = require('./routes/RecordRoute');
 
 const corsOptions = {
   origin: '*', // Reemplaza con tu dominio permitido
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 app.use('/ApiMinig/Categorias', CategoryRouter);
 app.use('/ApiMinig/UnidadesDM', UNDMRouter);
 app.use('/ApiMinig/Uniformes',uniformRouter);
+app.use('/ApiMinig/Historial', RecordRoute);
 
 const port = 3000; // Cambia esto al puerto que desees utilizar
 app.listen(port, () => {

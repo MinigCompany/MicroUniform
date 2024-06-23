@@ -1,4 +1,5 @@
 const uniformeModel = require("../models/Uniform");
+const History = require("../models/Record");
 
 const uniforms =  ((req, res)=>{
     uniformeModel.find()
@@ -54,6 +55,10 @@ const addUniform =  ((req, res)=>{
     });
     uniforme.save()
     .then(uniforme =>{
+        const historial = History({
+            uniforme:uniforme
+        })
+        historial.save();
         res.status(200).json({ message: "Uniforme registrado",uniforme,status:true })
     })
     .catch(err =>{
@@ -85,6 +90,13 @@ const updateUniform =  (async(req, res)=>{
         uniform.entradas.push(nuevaEntrada);
 
         uniform = await uniform.save();
+        const historial = await History.findOneAndUpdate(
+            { "uniforme._id": uniform._id },
+            {
+                uniforme:uniform
+            },
+            { new: true, upsert: true }
+        );
         return res.status(200).json({ message: "Uniforme actualizado con éxito", uniforme:uniform,status:true });
         
     } catch (error) {
@@ -127,8 +139,27 @@ const addUniformSalida = (async (req, res)=>{
             Object.assign(ultimaEntrada, entradaUpdate);
             ultimaEntrada.salidas = ultimaEntrada.salidas || [];
             ultimaEntrada.salidas.push(salida);
-            uniform = await uniform.save(); 
-            res.status(200).json({ message: "Salida registrada",status:true });
+            if(uniform.saldo<=0){
+                await uniformeModel.findByIdAndDelete(ID)
+                const historial = await History.findOneAndUpdate(
+                    { "uniforme._id": uniform._id },
+                    {
+                        uniforme:uniform
+                    },
+                    { new: true, upsert: true }
+                );
+                res.status(200).json({ message: "Material eliminado porque el saldo llegó a 0",status:true });
+            }else{
+                const historial = await History.findOneAndUpdate(
+                    { "uniforme._id": uniform._id },
+                    {
+                        uniforme:uniform
+                    },
+                    { new: true, upsert: true }
+                );
+                uniform = await uniform.save(); 
+                res.status(200).json({ message: "Salida registrada",status:true });
+            }
         }        
     } catch (error) {
         res.status(500).json({ message: "Error al obtener la última entrada: " + error,status:false });
