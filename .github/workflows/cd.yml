@@ -35,6 +35,3 @@ jobs:
 
     - name: Delete Old Docker container
       run: sudo docker rm -f micro-uniform-container || true
-
-    - name: Verify Docker Container
-      run: sudo docker ps -a | grep mining-web-container
