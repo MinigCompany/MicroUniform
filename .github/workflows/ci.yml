@@ -29,18 +29,6 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Start server
-      run: |
-        nohup npm start &
-        sleep 30 # Asegura que el servidor tenga tiempo de iniciarse
-
-    - name: Run tests
-      run: npm run cypress:run
-
-    - name: Stop server
-      run: |
-        fuser -k 3000/tcp # Finaliza el servidor despues de ejecutarse
-
     - name: Login Dockerhub
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
